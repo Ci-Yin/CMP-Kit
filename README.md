@@ -9,7 +9,11 @@
 [![Version](https://img.shields.io/github/v/tag/Ci-Yin/CMP-Kit?label=Version&logo=github)](https://github.com/Ci-Yin/CMP-Kit/releases)
 [![License](https://img.shields.io/github/license/Ci-Yin/CMP-Kit)](LICENSE.md)
 
+<img width="1200" alt="Demo" src="https://github.com/user-attachments/assets/a7970849-35c0-44c0-ab9e-6f5fcb5e5940" />
+<img width="1200" alt="Demo" src="https://github.com/user-attachments/assets/9cfa7b9d-c567-443f-afe5-c76d349e0f41" />
+
 </div>
+
 
 # 简要
 
@@ -65,7 +69,7 @@
 
 ## 安装
 
-当前仓库暂无 Marketplace 发布信息，你可以用以下方式本地安装：
+你可以从 [GitHub Releases](https://github.com/Ci-Yin/CMP-Kit/releases) 下载发布包安装，或用以下方式本地构建安装：
 
 - **从源码运行/调试**：见下方“开发与调试”
 - **从构建产物安装**：
