@@ -1,6 +1,7 @@
 package com.ciyin.cmpkit.module.resource
 
 import com.ciyin.cmpkit.module.resource.util.extractResStringKey
+import com.ciyin.cmpkit.module.resource.util.getComposeStringsXmlPsiFiles
 import com.ciyin.cmpkit.module.resource.util.getResStringValueOrNull
 import com.intellij.lang.ASTNode
 import com.intellij.lang.folding.FoldingBuilderEx
@@ -43,6 +44,7 @@ class ComposeResStringFoldingBuilder : FoldingBuilderEx(), DumbAware {
         if (DumbService.isDumb(project)) return FoldingDescriptor.EMPTY_ARRAY
 
         val descriptors = ArrayList<FoldingDescriptor>()
+        val dependencies = project.getComposeStringsXmlPsiFiles().toSet()
         root.accept(object : KtTreeVisitorVoid() {
             override fun visitDotQualifiedExpression(expression: KtDotQualifiedExpression) {
                 super.visitDotQualifiedExpression(expression)
@@ -57,7 +59,7 @@ class ComposeResStringFoldingBuilder : FoldingBuilderEx(), DumbAware {
                 val node = expression.node
                 val range = expression.textRange
                 if (range.isEmpty) return
-                descriptors.add(newDescriptor(node, range))
+                descriptors.add(newDescriptor(node, range, dependencies))
             }
 
             override fun visitCallExpression(expression: KtCallExpression) {
@@ -67,7 +69,7 @@ class ComposeResStringFoldingBuilder : FoldingBuilderEx(), DumbAware {
                 val node = expression.node
                 val range = expression.textRange
                 if (range.isEmpty) return
-                descriptors.add(newDescriptor(node, range))
+                descriptors.add(newDescriptor(node, range, dependencies))
             }
         })
         return descriptors.toTypedArray()
@@ -139,11 +141,11 @@ class ComposeResStringFoldingBuilder : FoldingBuilderEx(), DumbAware {
     /**
      * 创建折叠描述符。
      */
-    private fun newDescriptor(node: ASTNode, range: TextRange) = FoldingDescriptor(
+    private fun newDescriptor(node: ASTNode, range: TextRange, dependencies: Set<PsiElement>) = FoldingDescriptor(
         /* node = */ node,
         /* range = */ range,
         /* group = */ null,
-        /* dependencies = */ emptySet(),
+        /* dependencies = */ dependencies,
         /* neverExpands = */ false,
         /* placeholderText = */ null,
         /* collapsedByDefault = */ true,

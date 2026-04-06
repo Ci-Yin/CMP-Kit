@@ -53,7 +53,7 @@
          Read more: https://plugins.jetbrains.com/docs/intellij/plugin-extension-points.html -->
     <extensions defaultExtensionNs="com.intellij">
         <gotoDeclarationHandler
-            implementation="com.ciyin.cmpkit.module.resource.ResourceGotoDeclarationHandler"/>
+            implementation="com.ciyin.cmpkit.module.resource.ComposeResGotoDeclarationHandler"/>
         <lang.foldingBuilder language="kotlin"
                              implementationClass="com.ciyin.cmpkit.module.resource.ComposeResStringFoldingBuilder"/>
     </extensions>

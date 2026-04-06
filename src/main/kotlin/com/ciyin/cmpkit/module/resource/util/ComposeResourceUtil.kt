@@ -11,6 +11,7 @@ import com.intellij.openapi.vfs.VirtualFileManager
 import com.intellij.openapi.vfs.VfsUtilCore
 import com.intellij.openapi.vfs.VirtualFileVisitor
 import com.intellij.psi.PsiManager
+import com.intellij.psi.util.PsiModificationTracker
 import com.intellij.psi.xml.XmlFile
 import com.intellij.psi.util.CachedValue
 import com.intellij.psi.util.CachedValueProvider
@@ -76,6 +77,17 @@ internal fun Project.getResStringValueOrNull(key: String): String? {
 }
 
 /**
+ * 返回用于 Folding 依赖的 `strings.xml` PSI 文件列表（仅 composeResources 下，排除 build）。
+ *
+ * 说明：
+ * - 该列表本身只需要随项目根/VFS 结构变化更新
+ * - 但这些 PSI 文件作为 Folding 的 dependencies 后，内容改动会触发折叠占位文本重算
+ */
+internal fun Project.getComposeStringsXmlPsiFiles(): List<XmlFile> {
+    return service<ComposeStringValueResolver>().stringsXmlPsiFiles()
+}
+
+/**
  * 判断当前文件是否位于指定目录子树中（向上递归父目录匹配目录名）。
  *
  * @param name 目标目录名称
@@ -115,7 +127,7 @@ private fun KtExpression?.isResReference(): Boolean {
  * - DumbMode 直接返回 null，避免索引/PSI 访问风险与卡顿。
  */
 @Service(Service.Level.PROJECT)
-private class ComposeStringValueResolver(private val project: Project) {
+internal class ComposeStringValueResolver(private val project: Project) {
 
     private val cachedStringsXmlFiles: CachedValue<List<VirtualFile>> =
         CachedValuesManager.getManager(project).createCachedValue {
@@ -131,7 +143,8 @@ private class ComposeStringValueResolver(private val project: Project) {
             CachedValueProvider.Result.create(
                 ConcurrentHashMap(),
                 ProjectRootModificationTracker.getInstance(project),
-                VirtualFileManager.VFS_STRUCTURE_MODIFICATIONS
+                VirtualFileManager.VFS_STRUCTURE_MODIFICATIONS,
+                PsiModificationTracker.getInstance(project)
             )
         }
 
@@ -146,6 +159,15 @@ private class ComposeStringValueResolver(private val project: Project) {
                 val files = cachedStringsXmlFiles.value
                 resolveFromStringsXmlFiles(project, files, key)
             }
+        }
+    }
+
+    fun stringsXmlPsiFiles(): List<XmlFile> {
+        if (project.isDisposed) return emptyList()
+        val psiManager = PsiManager.getInstance(project)
+        return ReadAction.compute<List<XmlFile>, RuntimeException> {
+            if (project.isDisposed) return@compute emptyList()
+            cachedStringsXmlFiles.value.mapNotNull { psiManager.findFile(it) as? XmlFile }
         }
     }
 }

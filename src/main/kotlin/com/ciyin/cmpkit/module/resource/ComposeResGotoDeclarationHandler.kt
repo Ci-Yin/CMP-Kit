@@ -31,7 +31,7 @@ import java.util.concurrent.ConcurrentHashMap
  *
  * 说明：会排除 `build/` 目录下的生成物，只在 `composeResources/` 内查找。
  */
-class ResourceGotoDeclarationHandler : GotoDeclarationHandler {
+class ComposeResGotoDeclarationHandler : GotoDeclarationHandler {
 
     private val stringsXmlCachedValueKey: Key<CachedValue<List<VirtualFile>>> =
         Key.create("CMPKIT_STRINGS_XML_CACHED_VALUE")
