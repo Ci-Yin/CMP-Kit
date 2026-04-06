@@ -2,13 +2,13 @@
 <idea-plugin>
 
     <!-- A displayed Vendor name or Organization ID displayed on the Plugins Page. -->
-    <vendor url="https://github.com/Ci-Yin/CMP-Kit">CiYin</vendor>
+    <vendor url="https://github.com/Ci-Yin">CiYin</vendor>
 
     <!-- Description of the plugin displayed on the Plugin Page and IDE Plugin Manager.
          Guidelines: https://plugins.jetbrains.com/docs/marketplace/best-practices-for-listing.html#plugin-description -->
     <description><![CDATA[
         <p>
-            <b>CMP-Kit</b> 是一个面向 <b>Compose Multiplatform (CMP)</b> 的 Android Studio / IntelliJ 插件，
+            <b>CMP Kit</b> 是一个面向 <b>Compose Multiplatform (CMP)</b> 的 Android Studio / IntelliJ 插件，
             用于提升 <code>composeResources/</code> 资源访问效率。
         </p>
 
@@ -35,6 +35,11 @@
         <ul>
             <li>仅在 <code>composeResources/</code> 内查找资源，并自动排除 <code>build/</code> 目录下的生成物，避免误命中。</li>
         </ul>
+
+        <p>
+            <b>项目地址</b>：
+            <a href="https://github.com/Ci-Yin/CMP-Kit">CMP Kit</a>
+        </p>
 
         <p><b>Kotlin 支持</b>：已声明支持 Kotlin K2 模式。</p>
     ]]></description>

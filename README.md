@@ -1,4 +1,4 @@
-# CMP-Kit
+# CMP Kit
 
 面向 **Compose Multiplatform (CMP)** 的 IntelliJ/Android Studio 插件，专注提升 `composeResources/` 资源访问效率：
 
