@@ -1,5 +1,7 @@
-package com.ciyin.cmpkit
+package com.ciyin.cmpkit.module.resource
 
+import com.ciyin.cmpkit.module.resource.util.extractResStringKey
+import com.ciyin.cmpkit.module.resource.util.getResStringValueOrNull
 import com.intellij.lang.ASTNode
 import com.intellij.lang.folding.FoldingBuilderEx
 import com.intellij.lang.folding.FoldingDescriptor
@@ -45,11 +47,13 @@ class ComposeResStringFoldingBuilder : FoldingBuilderEx(), DumbAware {
             override fun visitDotQualifiedExpression(expression: KtDotQualifiedExpression) {
                 super.visitDotQualifiedExpression(expression)
                 // 若外层调用（stringResource/getString）会被折叠，则避免内部 Res.string.xxx 再折叠一次。
-                if (expression.getStrictParentOfType<KtCallExpression>()?.let { extractStringKeyFromCall(it) } != null) {
+                if (expression.getStrictParentOfType<KtCallExpression>()
+                        ?.let { extractStringKeyFromCall(it) } != null
+                ) {
                     return
                 }
-                val key = extractStringKey(expression) ?: return
-                project.resolveStringValue(key) ?: return
+                val key = extractResStringKey(expression) ?: return
+                project.getResStringValueOrNull(key) ?: return
                 val node = expression.node
                 val range = expression.textRange
                 if (range.isEmpty) return
@@ -59,7 +63,7 @@ class ComposeResStringFoldingBuilder : FoldingBuilderEx(), DumbAware {
             override fun visitCallExpression(expression: KtCallExpression) {
                 super.visitCallExpression(expression)
                 val key = extractStringKeyFromCall(expression) ?: return
-                project.resolveStringValue(key) ?: return
+                project.getResStringValueOrNull(key) ?: return
                 val node = expression.node
                 val range = expression.textRange
                 if (range.isEmpty) return
@@ -77,11 +81,11 @@ class ComposeResStringFoldingBuilder : FoldingBuilderEx(), DumbAware {
     override fun getPlaceholderText(node: ASTNode): String? {
         val psi = node.psi
         val key = when (psi) {
-            is KtDotQualifiedExpression -> extractStringKey(psi)
+            is KtDotQualifiedExpression -> extractResStringKey(psi)
             is KtCallExpression -> extractStringKeyFromCall(psi)
             else -> null
         } ?: return null
-        val value = psi.project.resolveStringValue(key) ?: return PLACEHOLDER_FALLBACK
+        val value = psi.project.getResStringValueOrNull(key) ?: return PLACEHOLDER_FALLBACK
         return formatPlaceholder(value)
     }
 
@@ -92,11 +96,17 @@ class ComposeResStringFoldingBuilder : FoldingBuilderEx(), DumbAware {
      */
     override fun isCollapsedByDefault(node: ASTNode): Boolean = true
 
+    /**
+     * 将实际字符串值格式化为折叠占位符文本（带引号与必要转义）。
+     */
     private fun formatPlaceholder(value: String): String {
         val display = if (value.length > MAX_PLACEHOLDER_LEN) value.take(MAX_PLACEHOLDER_LEN) + "…" else value
         return "\"" + escapeForPlaceholder(display) + "\""
     }
 
+    /**
+     * 为占位符文本做最小转义，避免破坏编辑器显示（如引号、换行、反斜杠）。
+     */
     private fun escapeForPlaceholder(value: String): String =
         value
             .replace("\\", "\\\\")
@@ -104,6 +114,11 @@ class ComposeResStringFoldingBuilder : FoldingBuilderEx(), DumbAware {
             .replace("\r", "\\r")
             .replace("\"", "\\\"")
 
+    /**
+     * 从调用表达式中提取 `Res.string.<key>` 的 key。
+     *
+     * 仅支持 `stringResource(...)` / `getString(...)` 且仅有 1 个参数，以避免误折叠格式化/quantity 等场景。
+     */
     private fun extractStringKeyFromCall(call: KtCallExpression): String? {
         val callee = call.calleeExpression?.text ?: return null
         if (callee != "stringResource" && callee != "getString") return null
@@ -118,19 +133,21 @@ class ComposeResStringFoldingBuilder : FoldingBuilderEx(), DumbAware {
         val argExpr = candidate.getArgumentExpression() ?: return null
 
         val dot = argExpr as? KtDotQualifiedExpression ?: return null
-        return extractStringKey(dot)
+        return extractResStringKey(dot)
     }
 
-    private fun newDescriptor(node: ASTNode, range: TextRange) =
-        FoldingDescriptor(
-            node,
-            range,
-            null,
-            emptySet(),
-            false,
-            null,
-            true,
-        )
+    /**
+     * 创建折叠描述符。
+     */
+    private fun newDescriptor(node: ASTNode, range: TextRange) = FoldingDescriptor(
+        /* node = */ node,
+        /* range = */ range,
+        /* group = */ null,
+        /* dependencies = */ emptySet(),
+        /* neverExpands = */ false,
+        /* placeholderText = */ null,
+        /* collapsedByDefault = */ true,
+    )
 
     companion object {
         private const val MAX_PLACEHOLDER_LEN = 60

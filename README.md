@@ -1,117 +1,126 @@
-# IntelliJ Platform Plugin Template
+# CMP-Kit
 
-[![Twitter Follow](https://img.shields.io/badge/follow-%40JBPlatform-1DA1F2?logo=twitter)](https://twitter.com/JBPlatform)
-[![Developers Forum](https://img.shields.io/badge/JetBrains%20Platform-Join-blue)][jb:forum]
+面向 **Compose Multiplatform (CMP)** 的 IntelliJ/Android Studio 插件，专注提升 `composeResources/` 资源访问效率：
 
-## Plugin template structure
+- **`Res.*.*` 一键跳转声明**（Ctrl/Cmd + 点击 / Go to Declaration）
+- **`Res.string.*` 字符串预览折叠**（把资源引用折叠成真实文案，默认自动折叠）
 
-A generated project contains the following content structure:
+> 仅对 `composeResources/` 内资源生效，并自动排除 `build/` 目录下的生成物，避免误跳与误解析。
 
+## 功能
+
+### `Res.*.*` 跳转声明
+
+在 Kotlin 代码里对以下形态提供“转到声明”能力：
+
+- **字符串**：`Res.string.<key>` → 跳转到 `composeResources/**/strings.xml` 内对应的 `<string name="<key>">`
+- **图片**：`Res.drawable.<name>` → 跳转到 `composeResources/**/drawable*/<name>.<ext>`
+- **字体**：`Res.font.<name>` → 跳转到 `composeResources/**/font*/<name>.<ext>`
+
+图片扩展名支持：`xml/png/jpg/jpeg/webp/svg`  
+字体扩展名支持：`ttf/otf`
+
+### 字符串预览折叠（Folding）
+
+将 Kotlin 代码中的字符串资源引用折叠为字符串值预览（带引号），效果类似 Android 资源引用折叠：
+
+- `Res.string.some_key` → `"实际文案"`
+- `stringResource(Res.string.some_key)` → `"实际文案"`
+- `getString(Res.string.some_key)` → `"实际文案"`
+
+解析来源：
+
+- 在项目范围查找 `composeResources/**/strings.xml`
+- 优先使用 `values/`，其次再尝试 `values-xx/` 等限定目录
+
+性能策略：
+
+- 索引不可用（Dumb Mode）或 IDE quick pass 阶段不做解析，避免卡顿
+
+## 适用范围与限制
+
+- **适用**：Compose Multiplatform 的 `composeResources/` 目录结构与 `Res.*.*` 访问方式
+- **不处理/不会折叠**：
+  - 非 `composeResources/` 下的 `strings.xml`（刻意不支持，防止误命中）
+  - `Res` 以外的自定义资源入口（当前只识别 `Res.string.xxx` 的固定形状）
+
+## 兼容性
+
+- **目标 IDE**：Android Studio（通过 IntelliJ Platform Gradle Plugin 的 `androidStudio(...)` 配置）
+- **sinceBuild**：`252.25557`（见 `gradle.properties`）
+- **构建环境**：JDK 21、Kotlin 2.3.x
+
+> 如果你需要支持更老的 IDE / IntelliJ IDEA，请调整 `platformVersion` 与 `sinceBuild` 并通过 `verifyPlugin` 验证。
+
+## 安装
+
+当前仓库暂无 Marketplace 发布信息，你可以用以下方式本地安装：
+
+- **从源码运行/调试**：见下方“开发与调试”
+- **从构建产物安装**：
+  - 运行 `buildPlugin` 生成插件包
+
+```bash
+# Windows (PowerShell / CMD)
+.\gradlew.bat buildPlugin
+
+# macOS / Linux
+./gradlew buildPlugin
 ```
-.
-├── .run/                   Predefined Run/Debug Configurations
-├── build/                  Output build directory
-├── gradle
-│   ├── wrapper/            Gradle Wrapper
-├── src                     Plugin sources
-│   ├── main
-│   │   ├── kotlin/         Kotlin production sources
-│   │   └── resources/      Resources - plugin.xml, icons, messages
-├── .gitignore              Git ignoring rules
-├── build.gradle.kts        Gradle build configuration
-├── gradle.properties       Gradle configuration properties
-├── gradlew                 *nix Gradle Wrapper script
-├── gradlew.bat             Windows Gradle Wrapper script
-├── README.md               README
-└── settings.gradle.kts     Gradle project settings
+
+  - IDE 中选择 **Settings/Preferences → Plugins → ⚙ → Install Plugin from Disk...**
+
+## 开发与调试
+
+```bash
+# 运行 IDE（开发调试）
+# Windows
+.\gradlew.bat runIde
+# macOS / Linux
+./gradlew runIde
+
+# 运行测试
+# Windows
+.\gradlew.bat test
+# macOS / Linux
+./gradlew test
+
+# 兼容性校验
+# Windows
+.\gradlew.bat verifyPlugin
+# macOS / Linux
+./gradlew verifyPlugin
+
+# 打包插件
+# Windows
+.\gradlew.bat buildPlugin
+# macOS / Linux
+./gradlew buildPlugin
 ```
 
-In addition to the configuration files, the most crucial part is the `src` directory, which contains our implementation
-and the manifest for our plugin – [plugin.xml][file:plugin.xml].
+本项目使用 `org.jetbrains.intellij.platform` Gradle 插件，更多任务说明见文档：
+[`tools-intellij-platform-gradle-plugin`](https://plugins.jetbrains.com/docs/intellij/tools-intellij-platform-gradle-plugin.html)
 
-> [!NOTE]
-> To use Java in your plugin, create the `/src/main/java` directory.
+## 项目结构
 
-## Plugin configuration file
+核心实现位于：
 
-The plugin configuration file is a [plugin.xml][file:plugin.xml] file located in the `src/main/resources/META-INF`
-directory.
-It provides general information about the plugin, its dependencies, extensions, and listeners.
+- `src/main/kotlin/com/ciyin/cmpkit/ResourceGotoDeclarationHandler.kt`：`Res.*.*` 跳转声明
+- `src/main/kotlin/com/ciyin/cmpkit/ComposeResStringFoldingBuilder.kt`：字符串预览折叠
+- `src/main/kotlin/com/ciyin/cmpkit/ComposeResourceUtils.kt`：资源定位与字符串解析
 
-You can read more about this file in the [Plugin Configuration File][docs:plugin.xml] section of our documentation.
+插件描述与扩展点注册位于：
 
-If you're still not quite sure what this is all about, read our
-introduction: [What is the IntelliJ Platform?][docs:intro]
+- `src/main/resources/META-INF/plugin.xml`
 
-$H$H Predefined Run/Debug configurations
+## 贡献
 
-Within the default project structure, there is a `.run` directory provided containing predefined *Run/Debug
-configurations* that expose corresponding Gradle tasks:
+欢迎 PR / Issue。建议在提交前：
 
-| Configuration name | Description                                                                                                                                                                         |
-|--------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| Run Plugin         | Runs [`:runIde`][gh:intellij-platform-gradle-plugin-runIde] IntelliJ Platform Gradle Plugin task. Use the *Debug* icon for plugin debugging.                                        |
-| Run Tests          | Runs [`:test`][gradle:lifecycle-tasks] Gradle task.                                                                                                                                 |
-| Run Verifications  | Runs [`:verifyPlugin`][gh:intellij-platform-gradle-plugin-verifyPlugin] IntelliJ Platform Gradle Plugin task to check the plugin compatibility against the specified IntelliJ IDEs. |
+- 运行 `verifyPlugin` 确认兼容性
+- 覆盖常见资源结构（`values/`、`values-zh/`、`drawable-night/` 等）
 
-> [!NOTE]
-> You can find the logs from the running task in the `idea.log` tab.
+## 参考
 
-## Publishing the plugin
-
-> [!TIP]
-> Make sure to follow all guidelines listed in [Publishing a Plugin][docs:publishing] to follow all recommended and
-> required steps.
-
-Releasing a plugin to [JetBrains Marketplace](https://plugins.jetbrains.com) is a straightforward operation that uses
-the `publishPlugin` Gradle task provided by
-the [intellij-platform-gradle-plugin][gh:intellij-platform-gradle-plugin-docs].
-
-You can also upload the plugin to the [JetBrains Plugin Repository](https://plugins.jetbrains.com/plugin/upload)
-manually via UI.
-
-## Useful links
-
-- [IntelliJ Platform SDK Plugin SDK][docs]
-- [IntelliJ Platform Gradle Plugin Documentation][gh:intellij-platform-gradle-plugin-docs]
-- [IntelliJ Platform Explorer][jb:ipe]
-- [JetBrains Marketplace Quality Guidelines][jb:quality-guidelines]
-- [IntelliJ Platform UI Guidelines][jb:ui-guidelines]
-- [JetBrains Marketplace Paid Plugins][jb:paid-plugins]
-- [IntelliJ SDK Code Samples][gh:code-samples]
-
-[docs]: https://plugins.jetbrains.com/docs/intellij
-
-[docs:intro]: https://plugins.jetbrains.com/docs/intellij/intellij-platform.html?from=IJPluginTemplate
-
-[docs:plugin.xml]: https://plugins.jetbrains.com/docs/intellij/plugin-configuration-file.html?from=IJPluginTemplate
-
-[docs:publishing]: https://plugins.jetbrains.com/docs/intellij/publishing-plugin.html?from=IJPluginTemplate
-
-[file:plugin.xml]: ./src/main/resources/META-INF/plugin.xml
-
-[gh:code-samples]: https://github.com/JetBrains/intellij-sdk-code-samples
-
-[gh:intellij-platform-gradle-plugin]: https://github.com/JetBrains/intellij-platform-gradle-plugin
-
-[gh:intellij-platform-gradle-plugin-docs]: https://plugins.jetbrains.com/docs/intellij/tools-intellij-platform-gradle-plugin.html
-
-[gh:intellij-platform-gradle-plugin-runIde]: https://plugins.jetbrains.com/docs/intellij/tools-intellij-platform-gradle-plugin-tasks.html#runIde
-
-[gh:intellij-platform-gradle-plugin-verifyPlugin]: https://plugins.jetbrains.com/docs/intellij/tools-intellij-platform-gradle-plugin-tasks.html#verifyPlugin
-
-[gradle:lifecycle-tasks]: https://docs.gradle.org/current/userguide/java_plugin.html#lifecycle_tasks
-
-[jb:github]: https://github.com/JetBrains/.github/blob/main/profile/README.md
-
-[jb:forum]: https://platform.jetbrains.com/
-
-[jb:quality-guidelines]: https://plugins.jetbrains.com/docs/marketplace/quality-guidelines.html
-
-[jb:paid-plugins]: https://plugins.jetbrains.com/docs/marketplace/paid-plugins-marketplace.html
-
-[jb:quality-guidelines]: https://plugins.jetbrains.com/docs/marketplace/quality-guidelines.html
-
-[jb:ipe]: https://jb.gg/ipe
-
-[jb:ui-guidelines]: https://jetbrains.github.io/ui
+- [IntelliJ Platform SDK 文档](https://plugins.jetbrains.com/docs/intellij)
+- [Plugin Configuration File（plugin.xml）](https://plugins.jetbrains.com/docs/intellij/plugin-configuration-file.html)

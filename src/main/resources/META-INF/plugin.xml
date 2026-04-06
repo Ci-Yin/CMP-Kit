@@ -8,13 +8,41 @@
     <name>CMP-Kit</name>
 
     <!-- A displayed Vendor name or Organization ID displayed on the Plugins Page. -->
-    <vendor url="https://www.yourcompany.com">YourCompany</vendor>
+    <vendor url="https://github.com/Ci-Yin/CMP-Kit">CiYin</vendor>
 
     <!-- Description of the plugin displayed on the Plugin Page and IDE Plugin Manager.
          Guidelines: https://plugins.jetbrains.com/docs/marketplace/best-practices-for-listing.html#plugin-description -->
     <description><![CDATA[
-        Enter short description for your plugin here.<br>
-        <em>most HTML tags may be used</em>
+        <p>
+            <b>CMP-Kit</b> 是一个面向 <b>Compose Multiplatform (CMP)</b> 的 Android Studio / IntelliJ 插件，
+            用于提升 <code>composeResources/</code> 资源访问效率。
+        </p>
+
+        <p><b>主要功能</b></p>
+        <ul>
+            <li>
+                <b>Res.*.* 转到声明</b>
+                <ul>
+                    <li><code>Res.string.&lt;key&gt;</code> → 跳转到 <code>composeResources/**/strings.xml</code> 中对应的 <code>&lt;string name="key"&gt;</code></li>
+                    <li><code>Res.drawable.&lt;name&gt;</code> / <code>Res.font.&lt;name&gt;</code> → 跳转到 <code>composeResources/**/(drawable*|font*)</code> 下对应资源文件</li>
+                </ul>
+            </li>
+            <li>
+                <b>字符串预览折叠（Folding）</b>
+                <ul>
+                    <li><code>Res.string.some_key</code> → <code>"实际文案"</code></li>
+                    <li><code>stringResource(Res.string.some_key)</code> → <code>"实际文案"</code></li>
+                    <li><code>getString(Res.string.some_key)</code> → <code>"实际文案"</code></li>
+                </ul>
+            </li>
+        </ul>
+
+        <p><b>范围与限制</b></p>
+        <ul>
+            <li>仅在 <code>composeResources/</code> 内查找资源，并自动排除 <code>build/</code> 目录下的生成物，避免误命中。</li>
+        </ul>
+
+        <p><b>Kotlin 支持</b>：已声明支持 Kotlin K2 模式。</p>
     ]]></description>
     <depends>com.intellij.modules.platform</depends>
     <depends>org.jetbrains.kotlin</depends>
@@ -25,8 +53,8 @@
          Read more: https://plugins.jetbrains.com/docs/intellij/plugin-extension-points.html -->
     <extensions defaultExtensionNs="com.intellij">
         <gotoDeclarationHandler
-            implementation="com.ciyin.cmpkit.ResourceGotoDeclarationHandler"/>
+            implementation="com.ciyin.cmpkit.module.resource.ResourceGotoDeclarationHandler"/>
         <lang.foldingBuilder language="kotlin"
-                             implementationClass="com.ciyin.cmpkit.ComposeResStringFoldingBuilder"/>
+                             implementationClass="com.ciyin.cmpkit.module.resource.ComposeResStringFoldingBuilder"/>
     </extensions>
 </idea-plugin>

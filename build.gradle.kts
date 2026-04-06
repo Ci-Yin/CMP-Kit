@@ -2,8 +2,8 @@ import org.jetbrains.intellij.platform.gradle.TestFrameworkType
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
-    id("org.jetbrains.kotlin.jvm") version "2.3.0"
-    id("org.jetbrains.intellij.platform") version "2.3.0"
+    alias(libs.plugins.kotlin.jvm)
+    alias(libs.plugins.intellij.platform)
 }
 
 group = "com.ciyin"
@@ -32,7 +32,7 @@ dependencies {
 intellijPlatform {
     pluginConfiguration {
         ideaVersion {
-            sinceBuild = "252.25557"
+            sinceBuild = providers.gradleProperty("sinceBuild").get()
         }
     }
 }

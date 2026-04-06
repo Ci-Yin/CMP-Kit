@@ -1,0 +1,11 @@
+[versions]
+# Gradle plugins
+kotlin = "2.3.0"
+intellijPlatform = "2.3.0"
+
+[plugins]
+kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
+intellij-platform = { id = "org.jetbrains.intellij.platform", version.ref = "intellijPlatform" }
+
+[libraries]
+# (暂无外部库依赖；后续可在此集中管理 implementation(...) 依赖)
