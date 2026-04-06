@@ -7,18 +7,19 @@
     <!-- Description of the plugin displayed on the Plugin Page and IDE Plugin Manager.
          Guidelines: https://plugins.jetbrains.com/docs/marketplace/best-practices-for-listing.html#plugin-description -->
     <description><![CDATA[
-        <p>
-            <b>CMP Kit</b> 是一个面向 <b>Compose Multiplatform (CMP)</b> 的 Android Studio / IntelliJ 插件，
-            用于提升 <code>composeResources/</code> 资源访问效率。
-        </p>
+        CMP Kit is an Android Studio / IntelliJ plug-in for Compose Multiplatform (CMP) that is used to improve the efficiency of accessing composeResources resources.
+        <br/><br/>
 
         <p><b>主要功能</b></p>
         <ul>
             <li>
                 <b>Res.*.* 转到声明</b>
                 <ul>
-                    <li><code>Res.string.&lt;key&gt;</code> → 跳转到 <code>composeResources/**/strings.xml</code> 中对应的 <code>&lt;string name="key"&gt;</code></li>
-                    <li><code>Res.drawable.&lt;name&gt;</code> / <code>Res.font.&lt;name&gt;</code> → 跳转到 <code>composeResources/**/(drawable*|font*)</code> 下对应资源文件</li>
+                    <li><code>Res.string.&lt;key&gt;</code> → 跳转到 <code>composeResources/**/strings.xml</code> 中对应的
+                        <code>&lt;string name="key"&gt;</code></li>
+                    <li><code>Res.drawable.&lt;name&gt;</code> / <code>Res.font.&lt;name&gt;</code> → 跳转到 <code>composeResources/**/(drawable*|font*)</code>
+                        下对应资源文件
+                    </li>
                 </ul>
             </li>
             <li>
@@ -33,7 +34,8 @@
 
         <p><b>范围与限制</b></p>
         <ul>
-            <li>仅在 <code>composeResources/</code> 内查找资源，并自动排除 <code>build/</code> 目录下的生成物，避免误命中。</li>
+            <li>仅在 <code>composeResources/</code> 内查找资源，并自动排除 <code>build/</code> 目录下的生成物，避免误命中。
+            </li>
         </ul>
 
         <p>
@@ -42,7 +44,7 @@
         </p>
 
         <p><b>Kotlin 支持</b>：已声明支持 Kotlin K2 模式。</p>
-    ]]></description>
+        ]]></description>
     <depends>com.intellij.modules.platform</depends>
     <depends>org.jetbrains.kotlin</depends>
     <extensions defaultExtensionNs="org.jetbrains.kotlin">

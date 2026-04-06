@@ -7,6 +7,7 @@
 面向 **Compose Multiplatform (CMP)** 的 IntelliJ/Android Studio 插件，专注提升 `composeResources/` 资源访问效率
 
 [![Version](https://img.shields.io/github/v/tag/Ci-Yin/CMP-Kit?label=Version&logo=github)](https://github.com/Ci-Yin/CMP-Kit/releases)
+[![Marketplace](https://img.shields.io/jetbrains/plugin/v/31118-cmp-kit?label=Marketplace&logo=jetbrains)](https://plugins.jetbrains.com/plugin/31118-cmp-kit)
 [![License](https://img.shields.io/github/license/Ci-Yin/CMP-Kit)](LICENSE.md)
 
 <img width="2152" height="756" alt="Image" src="https://github.com/user-attachments/assets/711f18b0-702e-42c1-be91-000e374e2e75" />
