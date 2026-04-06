@@ -1,5 +1,4 @@
 import org.jetbrains.intellij.platform.gradle.TestFrameworkType
-import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
     alias(libs.plugins.kotlin.jvm)
@@ -7,12 +6,10 @@ plugins {
 }
 
 group = "com.ciyin"
-version = "1.0-SNAPSHOT"
+version = providers.gradleProperty("plugin.version").get()
 
 kotlin {
-    compilerOptions {
-        jvmTarget.set(JvmTarget.JVM_21)
-    }
+    jvmToolchain(21)
 }
 
 repositories {
@@ -23,7 +20,7 @@ repositories {
 // Read more: https://plugins.jetbrains.com/docs/intellij/tools-intellij-platform-gradle-plugin.html
 dependencies {
     intellijPlatform {
-        androidStudio(providers.gradleProperty("platformVersion"))
+        androidStudio(providers.gradleProperty("plugin.platform.version"))
         testFramework(TestFrameworkType.Platform)
         bundledPlugin("org.jetbrains.kotlin")
     }
@@ -32,15 +29,10 @@ dependencies {
 intellijPlatform {
     pluginConfiguration {
         ideaVersion {
-            sinceBuild = providers.gradleProperty("sinceBuild").get()
+            sinceBuild = providers.gradleProperty("plugin.sinceBuild").get()
         }
-    }
-}
-
-tasks {
-    // Set the JVM compatibility versions
-    withType<JavaCompile> {
-        sourceCompatibility = "21"
-        targetCompatibility = "21"
+        id = providers.gradleProperty("plugin.id").get()
+        name = providers.gradleProperty("plugin.name").get()
+        version = providers.gradleProperty("plugin.version").get()
     }
 }
