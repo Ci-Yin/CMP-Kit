@@ -9,8 +9,8 @@
 [![Version](https://img.shields.io/github/v/tag/Ci-Yin/CMP-Kit?label=Version&logo=github)](https://github.com/Ci-Yin/CMP-Kit/releases)
 [![License](https://img.shields.io/github/license/Ci-Yin/CMP-Kit)](LICENSE.md)
 
-<img width="1200" alt="Demo" src="https://github.com/user-attachments/assets/a7970849-35c0-44c0-ab9e-6f5fcb5e5940" />
-<img width="1200" alt="Demo" src="https://github.com/user-attachments/assets/9cfa7b9d-c567-443f-afe5-c76d349e0f41" />
+<img width="500" alt="Demo" src="https://github.com/user-attachments/assets/9cfa7b9d-c567-443f-afe5-c76d349e0f41" />
+<img width="500" alt="Demo" src="https://github.com/user-attachments/assets/a7970849-35c0-44c0-ab9e-6f5fcb5e5940" />
 
 </div>
 
