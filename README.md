@@ -1,6 +1,17 @@
+<div align="center">
+
+<img src="src/main/resources/META-INF/pluginIcon.svg" width="84" alt="Compose Resources Kit icon"/>
+
 # CMP Kit
 
-面向 **Compose Multiplatform (CMP)** 的 IntelliJ/Android Studio 插件，专注提升 `composeResources/` 资源访问效率：
+面向 **Compose Multiplatform (CMP)** 的 IntelliJ/Android Studio 插件，专注提升 `composeResources/` 资源访问效率
+
+[![Version](https://img.shields.io/github/v/tag/Ci-Yin/CMP-Kit?label=Version&logo=github)](https://github.com/Ci-Yin/CMP-Kit/releases)
+[![License](https://img.shields.io/github/license/Ci-Yin/CMP-Kit)](LICENSE.md)
+
+</div>
+
+# 简要
 
 - **`Res.*.*` 一键跳转声明**（Ctrl/Cmd + 点击 / Go to Declaration）
 - **`Res.string.*` 字符串预览折叠**（把资源引用折叠成真实文案，默认自动折叠）
